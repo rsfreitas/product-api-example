@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package services.product_resource.v1;
+option go_package = "services/product_resource/v1;product_resourcev1";
+
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-pocket-extensions/options/pocket/pocket_openapi.proto";
+
+message ProductProto {
+  string id = 1 [(pocket.openapi.property) = {description: "ID do produto", example: "prd_42v0t5IUiw9iIxpddWnybMCleq7uMynCbANK1VTxaT"}];
+  string name = 2 [(pocket.openapi.property) = {description: "Nome do produto", example: "Action figure"}];
+  google.protobuf.Timestamp created_at = 3 [(pocket.openapi.property) = {description: "Data/hora de criação do produto", example: "2023-12-14T16:28:44Z"}];
+  google.protobuf.Timestamp updated_at = 4 [(pocket.openapi.property) = {description: "Data/hora da atualização do produto", example: "2023-12-14T16:28:44Z"}];
+  google.protobuf.Timestamp deleted_at = 5 [(pocket.openapi.property) = {description: "Data/hora da remoção do produto", example: "2023-12-14T16:28:44Z"}];
+}

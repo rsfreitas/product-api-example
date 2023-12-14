@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package services.product_resource.v1;
+option go_package = "services/product_resource/v1;product_resourcev1";
+
+import "google/protobuf/struct.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-pocket-extensions/options/pocket/pocket.proto";
+import "protoc-gen-pocket-extensions/options/pocket/pocket_openapi.proto";
+import "protoc-gen-pocket-extensions/options/pocket/pocket_http.proto";
+import "protoc-gen-httpserver/httpserver/extension/v1/extension.proto";
+import "services/product_resource/v1/product_resource.proto";
+
+option (pocket.service.app_name) = "product-resource";
+option (pocket.openapi.title) = "product-resource";
+option (pocket.openapi.version) = "1.0.0";
+
+service ProductResourceService {
+  option (pocket.http.service_definitions) = {
+    security_scheme: {
+      type: HTTP_SECURITY_SCHEME_HTTP
+    }
+  };
+
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse) {
+    option (google.api.http) = {
+      post: "/product-resource/v1/products"
+      body: "*"
+    };
+
+    option (pocket.openapi.operation) = {
+      summary: "Cria um produto"
+      description: "Realiza a criação de um novo produto."
+      response: {
+        code: RESPONSE_CODE_CREATED
+        description: "Sucesso."
+      }
+
+      response: {
+        code: RESPONSE_CODE_BAD_REQUEST
+        description: "Argumentos da requisição inválidos."
+      }
+
+      response: {
+        code: RESPONSE_CODE_INTERNAL_ERROR
+        description: "Erro interno do servidor."
+      }
+    };
+  }
+
+  rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse) {
+    option (google.api.http) = {
+      get: "/product-resource/v1/products/{id}"
+    };
+
+    option (pocket.openapi.operation) = {
+      summary: "Procura por um produto"
+      description: "Realiza a procura por um produto através de seu ID. Não exibindo produtos removidos."
+      response: {
+        code: RESPONSE_CODE_OK
+        description: "Sucesso."
+      }
+
+      response: {
+        code: RESPONSE_CODE_BAD_REQUEST
+        description: "Argumentos da requisição inválidos."
+      }
+
+      response: {
+        code: RESPONSE_CODE_NOT_FOUND
+        description: "Documento não encontrado"
+      }
+
+      response: {
+        code: RESPONSE_CODE_INTERNAL_ERROR
+        description: "Erro interno do servidor."
+      }
+    };
+  }
+
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse) {
+    option (google.api.http) = {
+      put: "/product-resource/v1/products/{id}"
+      body: "*"
+    };
+
+    option (pocket.openapi.operation) = {
+      summary: "Atualiza um produto"
+      description: "Realiza a atualização de um produto através de seu ID."
+      response: {
+        code: RESPONSE_CODE_OK
+        description: "Sucesso."
+      }
+
+      response: {
+        code: RESPONSE_CODE_BAD_REQUEST
+        description: "Argumentos da requisição inválidos."
+      }
+
+      response: {
+        code: RESPONSE_CODE_NOT_FOUND
+        description: "Documento não encontrado"
+      }
+
+      response: {
+        code: RESPONSE_CODE_INTERNAL_ERROR
+        description: "Erro interno do servidor."
+      }
+    };
+  }
+
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse) {
+    option (google.api.http) = {
+      delete: "/product-resource/v1/products/{id}"
+    };
+
+    option (pocket.openapi.operation) = {
+      summary: "Remove um produto"
+      description: "Faz a remoção de um produto, certificando de não remover um produto já removido previamente."
+      response: {
+        code: RESPONSE_CODE_OK
+        description: "Sucesso."
+      }
+
+      response: {
+        code: RESPONSE_CODE_BAD_REQUEST
+        description: "Argumentos da requisição inválidos."
+      }
+
+      response: {
+        code: RESPONSE_CODE_NOT_FOUND
+        description: "Documento não encontrado"
+      }
+
+      response: {
+        code: RESPONSE_CODE_INTERNAL_ERROR
+        description: "Erro interno do servidor."
+      }
+    };
+  }
+}
+
+message CreateProductRequest {
+  string name = 1 [
+    (httpserver.extension.v1.validation) = {required: true},
+    (pocket.openapi.property) = {description: "Nome do produto que será criado", example: "Nome"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_BODY}
+  ];
+}
+
+message CreateProductResponse {
+  ProductProto product = 1;
+}
+
+message GetProductByIDRequest {
+  string id = 1 [
+    (httpserver.extension.v1.validation) = {required: true},
+    (pocket.openapi.property) = {description: "ID do produto", example: "prd_42v0t5IUiw9iIxpddWnybMCleq7uMynCbANK1VTxaT"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_PATH}
+  ];
+
+  bool return_deleted = 2 [
+    (pocket.openapi.property) = {description: "Quando true indica que produtos removidos serão retornados"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_QUERY}
+  ];
+}
+
+message GetProductByIDResponse {
+  ProductProto product = 1;
+}
+
+message UpdateProductRequest {
+  string id = 1 [
+    (httpserver.extension.v1.validation) = {required: true},
+    (pocket.openapi.property) = {description: "ID do produto", example: "prd_42v0t5IUiw9iIxpddWnybMCleq7uMynCbANK1VTxaT"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_PATH}
+  ];
+
+  string name = 2 [
+    (httpserver.extension.v1.validation) = {required: true},
+    (pocket.openapi.property) = {description: "Novo nome do produto", example: "Novo nome"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_BODY}
+  ];
+}
+
+message UpdateProductResponse {
+  ProductProto product = 1;
+}
+
+message DeleteProductRequest {
+  string id = 1 [
+    (httpserver.extension.v1.validation) = {required: true},
+    (pocket.openapi.property) = {description: "ID do produto", example: "prd_42v0t5IUiw9iIxpddWnybMCleq7uMynCbANK1VTxaT"},
+    (pocket.http.field_definitions) = {location: HTTP_FIELD_LOCATION_PATH}
+  ];
+}
+
+message DeleteProductResponse {
+  ProductProto product = 1;
+}
