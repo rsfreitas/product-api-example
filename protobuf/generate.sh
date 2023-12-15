@@ -52,7 +52,7 @@ install_deps() {
     buf --version
 }
 
-while getopts :hs:uilf opt; do
+while getopts :hi opt; do
     case $opt in
         h)
             usage
