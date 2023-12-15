@@ -68,3 +68,8 @@ ____________________________________O/_______
                                     O\
 ⇨ http server started on [::]:8080
 ```
+
+4. Test the endpoints
+
+The file `testing-api/product_resource_api.har` can be imported by tools such as
+Insomnia or Postman to ease the tests.
